@@ -1,6 +1,7 @@
 #include <beast_websocket/connection.hpp>
 #include <beast_websocket/websocket_server.hpp>
 #include <beast_websocket/log.hpp>
+#include <beast_websocket/io_context_pool.hpp>
 
 namespace beast_websocket
 {
@@ -12,7 +13,7 @@ websocket_server::websocket_server(boost::asio::io_context& ctx, uint16_t port) 
 
 void websocket_server::start_accept()
 {
-	auto conptr = std::make_shared<connection>(m_ctx);
+	auto conptr = std::make_shared<connection>(io_context_pool::instance().get_context());
 	m_acceptor.async_accept(conptr->get_socket(), [this, conptr](std::error_code ec)
 		{
 			try
