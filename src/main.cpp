@@ -1,8 +1,6 @@
 #include <beast_websocket/log.hpp>
 #include <beast_websocket/websocket_server.hpp>
 #include <boost/asio/signal_set.hpp>
-#include <fmt/format.h>
-using fmt::print;
 
 int main()
 {
