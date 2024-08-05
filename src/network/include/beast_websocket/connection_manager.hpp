@@ -14,7 +14,7 @@ struct connection_manager
 {
 	connection_manager(connection_manager&&) = delete;
 	static connection_manager& instance() noexcept;
-	void add_conncetion(std::shared_ptr<connection> conptr);
+	void add_conncetion(std::shared_ptr<connection> connection_ptr);
 	void remove_conncetion(boost::uuids::uuid uuid);
 
 private:

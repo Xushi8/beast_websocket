@@ -9,9 +9,9 @@ connection_manager& connection_manager::instance() noexcept
 	return instance;
 }
 
-void connection_manager::add_conncetion(std::shared_ptr<connection> conptr)
+void connection_manager::add_conncetion(std::shared_ptr<connection> connection_ptr)
 {
-	m_conncetions.try_emplace(conptr->get_uuid(), conptr);
+	m_conncetions.try_emplace(connection_ptr->get_uuid(), connection_ptr);
 }
 
 void connection_manager::remove_conncetion(boost::uuids::uuid uuid)
