@@ -1,5 +1,5 @@
 add_subdirectory(common)
-add_subdirectory(util)
+add_subdirectory(network)
 
 set(TARGETS
     main
@@ -11,7 +11,7 @@ foreach(name ${TARGETS})
     PUBLIC
         # src
         common
-        util
+        network
 
         # package
         Threads::Threads
@@ -43,7 +43,7 @@ if(BOOST_WEBSOCKET_USE_GUI)
     PUBLIC
         # src
         common
-        util
+        network
         gui
 
         # package
