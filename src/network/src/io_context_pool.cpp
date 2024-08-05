@@ -21,7 +21,7 @@ io_context_pool::io_context_pool(size_t thread_num) :
 io_context_pool::~io_context_pool()
 {
 	stop();
-	spdlog::info("io_context_pool destroyed!");
+	spdlog::info("io_context_pool destroyed");
 }
 
 boost::asio::io_context& io_context_pool::get_context()
