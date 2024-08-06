@@ -3,6 +3,8 @@ add_subdirectory(network)
 
 set(TARGETS
     main
+    server
+    client
 )
 
 foreach(name ${TARGETS})
