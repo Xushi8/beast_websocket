@@ -21,9 +21,9 @@ boost::asio::ip::tcp::socket& connection::get_socket() noexcept
 	return boost::beast::get_lowest_layer(m_ws).socket();
 }
 
-void connection::async_accept()
+void connection::async_accept() noexcept
 {
-	m_ws.async_accept([self = shared_from_this()](std::error_code ec)
+	m_ws.async_accept([self = shared_from_this()](boost::system::error_code ec)
 		{
 			try
 			{
@@ -34,7 +34,7 @@ void connection::async_accept()
 				}
 
 				connection_manager::instance().add_conncetion(self);
-				self->start();
+				self->async_read();
 			}
 			catch (std::exception const& e)
 			{
@@ -43,9 +43,9 @@ void connection::async_accept()
 		});
 }
 
-void connection::start()
+void connection::async_read() noexcept
 {
-	m_ws.async_read(m_receive_buffer, [self = shared_from_this()](std::error_code ec, [[maybe_unused]] size_t buffer_len)
+	m_ws.async_read(m_receive_buffer, [self = shared_from_this()](boost::system::error_code ec, [[maybe_unused]] size_t buffer_len)
 		{
 			try
 			{
@@ -61,8 +61,8 @@ void connection::start()
 				self->m_receive_buffer.consume(self->m_receive_buffer.size());
 				spdlog::info("Websocket receive data is: {}", data);
 
-				self->async_send(std::move(data));
-				self->start();
+				self->async_write(std::move(data));
+				self->async_read();
 			}
 			catch (std::exception const& e)
 			{
@@ -72,20 +72,32 @@ void connection::start()
 		});
 }
 
-// 有点问题, 回头用条件变量重写一下
-void connection::async_send(std::string msg)
+void connection::async_write(std::string msg)
 {
+	bool is_que_empty;
 	{
 		std::scoped_lock lock(m_send_mtx);
-		size_t que_len = m_send_que.size();
+		is_que_empty = m_send_que.empty();
 		m_send_que.emplace(msg);
-		if (que_len > 0)
-		{
-			return;
-		}
+	}
+	if (!is_que_empty)
+	{
+		return;
+	}
+	async_write();
+}
+
+void connection::async_write()
+{
+	std::string send_data;
+	{
+		std::scoped_lock lock(m_send_mtx);
+		send_data = std::move(m_send_que.front());
+		m_send_que.pop();
 	}
 
-	m_ws.async_write(boost::asio::const_buffer(msg.c_str(), msg.size()), [self = shared_from_this()](std::error_code ec, [[maybe_unused]] size_t nsize)
+	m_ws.async_write(boost::asio::const_buffer(send_data.c_str(), send_data.size()),
+		[self = shared_from_this()](boost::system::error_code ec, [[maybe_unused]] size_t nsize)
 		{
 			try
 			{
@@ -96,18 +108,13 @@ void connection::async_send(std::string msg)
 					return;
 				}
 
-				std::string send_msg;
+				bool is_que_empty;
 				{
 					std::scoped_lock lock(self->m_send_mtx);
-					self->m_send_que.pop();
-					if (self->m_send_que.empty())
-					{
-						return;
-					}
-					send_msg = self->m_send_que.front();
+					is_que_empty = self->m_send_que.empty();
 				}
-
-				self->async_send(std::move(send_msg));
+				if (!is_que_empty)
+					self->async_write();
 			}
 			catch (std::exception const& e)
 			{
