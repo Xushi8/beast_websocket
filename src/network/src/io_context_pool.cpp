@@ -18,7 +18,7 @@ io_context_pool::io_context_pool(size_t thread_num) :
 	}
 }
 
-io_context_pool::~io_context_pool()
+io_context_pool::~io_context_pool() noexcept
 {
 	stop();
 	spdlog::info("io_context_pool destroyed");

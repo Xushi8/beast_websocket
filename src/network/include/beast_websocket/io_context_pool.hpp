@@ -11,7 +11,7 @@ struct io_context_pool
 {
 	io_context_pool(io_context_pool&&) = delete;
 
-	~io_context_pool();
+	~io_context_pool() noexcept;
 	boost::asio::io_context& get_context();
 	void stop();
 	static io_context_pool& instance();

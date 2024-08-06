@@ -14,7 +14,7 @@ websocket_server::websocket_server(boost::asio::io_context& ctx, uint16_t port) 
 void websocket_server::start_accept()
 {
 	auto connection_ptr = std::make_shared<connection>(io_context_pool::instance().get_context());
-	m_acceptor.async_accept(connection_ptr->get_socket(), [this, connection_ptr](std::error_code ec)
+	m_acceptor.async_accept(connection_ptr->get_socket(), [this, connection_ptr](boost::system::error_code ec)
 		{
 			try
 			{
@@ -32,6 +32,6 @@ void websocket_server::start_accept()
 			{
 				spdlog::warn("Acceptor async_accept exceptino: {}", e.what());
 			}
-    });
+		});
 }
 } // namespace beast_websocket
