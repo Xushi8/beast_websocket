@@ -6,7 +6,7 @@
 namespace beast_websocket
 {
 connection::connection(boost::asio::io_context& ctx, websocket_server& server) :
-	m_ctx(ctx), m_ws(ctx), m_uuid(m_gen()), m_websocket_server(server)
+	m_ws(ctx), m_uuid(m_gen()), m_websocket_server(server)
 {
 }
 

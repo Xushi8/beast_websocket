@@ -4,7 +4,7 @@
 namespace beast_websocket
 {
 io_context_pool::io_context_pool(size_t thread_num) :
-	m_contexts(thread_num), next_context(0)
+	m_contexts(thread_num), m_next_context(0)
 {
 	m_works.reserve(thread_num);
 	m_threads.reserve(thread_num);
@@ -26,10 +26,10 @@ io_context_pool::~io_context_pool() noexcept
 
 boost::asio::io_context& io_context_pool::get_context()
 {
-	auto& res = m_contexts[next_context];
-	if (++next_context == m_contexts.size()) [[unlikely]]
+	auto& res = m_contexts[m_next_context];
+	if (++m_next_context == m_contexts.size()) [[unlikely]]
 	{
-		next_context = 0;
+		m_next_context = 0;
 	}
 	return res;
 }
