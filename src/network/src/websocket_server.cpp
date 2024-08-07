@@ -14,7 +14,7 @@ websocket_server::websocket_server(boost::asio::io_context& ctx, uint16_t port) 
 void websocket_server::start_accept()
 {
 	// auto connection_ptr = std::make_shared<connection>(m_ctx);
-	auto connection_ptr = std::make_shared<connection>(io_context_pool::instance().get_context());
+	auto connection_ptr = std::make_shared<connection>(io_context_pool::instance().get_context(), *this);
 	m_acceptor.async_accept(connection_ptr->get_socket(), [this, connection_ptr](boost::system::error_code ec)
 		{
 			try

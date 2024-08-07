@@ -58,7 +58,7 @@ void connection::async_read() noexcept
 				self->m_ws.text(self->m_ws.got_text());
 				std::string data = boost::beast::buffers_to_string(self->m_receive_buffer.data());
 				self->m_receive_buffer.consume(self->m_receive_buffer.size());
-				spdlog::info("Websocket receive data is: {}", data);
+				spdlog::trace("Websocket receive data is: {}", data);
 
 				self->async_write(std::move(data));
 				self->async_read();
