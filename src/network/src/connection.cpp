@@ -1,13 +1,12 @@
 #include <beast_websocket/connection.hpp>
-#include <beast_websocket/connection_manager.hpp>
 #include <boost/beast/core/buffers_to_string.hpp>
 #include <beast_websocket/log.hpp>
-#include <system_error>
+#include <beast_websocket/websocket_server.hpp>
 
 namespace beast_websocket
 {
-connection::connection(boost::asio::io_context& ctx) :
-	m_ctx(ctx), m_ws(ctx), m_uuid(m_gen())
+connection::connection(boost::asio::io_context& ctx, websocket_server& server) :
+	m_ctx(ctx), m_ws(ctx), m_uuid(m_gen()), m_websocket_server(server)
 {
 }
 
@@ -33,7 +32,7 @@ void connection::async_accept() noexcept
 					return;
 				}
 
-				connection_manager::instance().add_conncetion(self);
+				self->m_websocket_server.add_conncetion(self);
 				self->async_read();
 			}
 			catch (std::exception const& e)
@@ -52,7 +51,7 @@ void connection::async_read() noexcept
 				if (ec)
 				{
 					spdlog::info("Websocket receive failed, code: {}, message: {}", ec.value(), ec.message());
-					connection_manager::instance().remove_conncetion(self->get_uuid());
+					self->m_websocket_server.remove_conncetion(self->get_uuid());
 					return;
 				}
 
@@ -67,7 +66,7 @@ void connection::async_read() noexcept
 			catch (std::exception const& e)
 			{
 				spdlog::warn("Websocket read failed, exception: {}", e.what());
-				connection_manager::instance().remove_conncetion(self->get_uuid());
+				self->m_websocket_server.remove_conncetion(self->get_uuid());
 			}
 		});
 }
@@ -104,7 +103,7 @@ void connection::async_write()
 				if (ec)
 				{
 					spdlog::info("Websocket send failed, code: {}, message: {}", ec.value(), ec.message());
-					connection_manager::instance().remove_conncetion(self->get_uuid());
+					self->m_websocket_server.remove_conncetion(self->get_uuid());
 					return;
 				}
 
@@ -119,7 +118,7 @@ void connection::async_write()
 			catch (std::exception const& e)
 			{
 				spdlog::warn("Websocket send failed, code: {}, message: {}", ec.value(), ec.message());
-				connection_manager::instance().remove_conncetion(self->get_uuid());
+				self->m_websocket_server.remove_conncetion(self->get_uuid());
 			}
 		});
 }
