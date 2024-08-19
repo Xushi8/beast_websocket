@@ -79,13 +79,11 @@ void connection::async_write(std::string msg)
 		is_que_empty = m_send_que.empty();
 		m_send_que.emplace(std::move(msg));
 	}
-	if (!is_que_empty)
-	{
-		return;
-	}
-	async_write();
+	if (is_que_empty)
+		async_write();
 }
 
+// this function can only be called by async_write(msg) when send_que is not empty
 void connection::async_write()
 {
 	std::string send_data;
