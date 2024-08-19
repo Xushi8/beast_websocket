@@ -77,7 +77,7 @@ void connection::async_write(std::string msg)
 	{
 		std::scoped_lock lock(m_send_mtx);
 		is_que_empty = m_send_que.empty();
-		m_send_que.emplace(msg);
+		m_send_que.emplace(std::move(msg));
 	}
 	if (!is_que_empty)
 	{

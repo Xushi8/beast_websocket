@@ -30,6 +30,7 @@ private:
 
 	void async_write(std::string msg);
 
+	// this function can only be called by async_write(msg) when send_que is not empty
 	void async_write();
 
 	boost::beast::websocket::stream<boost::beast::tcp_stream> m_ws;
