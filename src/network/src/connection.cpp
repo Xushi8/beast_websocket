@@ -8,6 +8,8 @@ namespace beast_websocket
 connection::connection(boost::asio::io_context& ctx, websocket_server& server) :
 	m_ws(ctx), m_uuid(m_gen()), m_websocket_server(server)
 {
+	m_ws.text(true);
+	// m_ws.text(false);
 }
 
 boost::uuids::uuid connection::get_uuid() noexcept
@@ -55,7 +57,7 @@ void connection::async_read() noexcept
 					return;
 				}
 
-				self->m_ws.text(self->m_ws.got_text());
+				// self->m_ws.text(self->m_ws.got_text());
 				std::string data = boost::beast::buffers_to_string(self->m_receive_buffer.data());
 				self->m_receive_buffer.consume(self->m_receive_buffer.size());
 				spdlog::trace("Websocket receive data is: {}", data);
