@@ -5,7 +5,7 @@
 
 namespace beast_websocket
 {
-void set_default_log(std::string const& log_name, std::string const& log_path, spdlog::level::level_enum level = spdlog::level::info);
+void set_default_log(std::string const& log_path = "./logs/log.txt", std::string const& log_name = "basic_namespace", spdlog::level::level_enum level = spdlog::level::info);
 
 void change_default_log_level(spdlog::level::level_enum level);
 } // namespace beast_websocket

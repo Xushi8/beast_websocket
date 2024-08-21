@@ -4,7 +4,7 @@
 
 int main()
 {
-	beast_websocket::set_default_log("beast_websocket", "logs/beast_websocket.txt");
+	beast_websocket::set_default_log("logs/beast_websocket.txt", "beast_websocket");
 
 	boost::asio::io_context ctx;
 
@@ -13,10 +13,10 @@ int main()
 		{
 			ctx.stop();
 		});
-	
+
 	beast_websocket::websocket_server server(ctx, 8888);
 	server.start_accept();
-	
+
 	ctx.run();
 	return 0;
 }
