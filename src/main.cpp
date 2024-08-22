@@ -5,6 +5,7 @@
 int main()
 {
 	beast_websocket::set_default_log("logs/beast_websocket.txt", "beast_websocket");
+	beast_websocket::change_default_log_level(spdlog::level::trace);
 
 	boost::asio::io_context ctx;
 

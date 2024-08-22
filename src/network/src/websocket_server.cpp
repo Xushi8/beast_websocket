@@ -2,6 +2,7 @@
 #include <beast_websocket/websocket_server.hpp>
 #include <beast_websocket/log.hpp>
 #include <beast_websocket/io_context_pool.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 namespace beast_websocket
 {
@@ -22,11 +23,14 @@ void websocket_server::start_accept()
 				if (ec)
 				{
 					spdlog::info("Acceptor async_accept failed, code: {}, message: {}", ec.value(), ec.message());
+					start_accept();
 					return;
 				}
 
+				spdlog::debug("Acceptor async_accept successfully, session: {}", boost::uuids::to_string(connection_ptr->get_uuid()));
+
 				connection_ptr->async_accept();
-				
+
 				start_accept();
 			}
 			catch (std::exception const& e)

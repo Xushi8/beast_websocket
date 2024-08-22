@@ -2,6 +2,7 @@
 #include <boost/beast/core/buffers_to_string.hpp>
 #include <beast_websocket/log.hpp>
 #include <beast_websocket/websocket_server.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 namespace beast_websocket
 {
@@ -30,16 +31,18 @@ void connection::async_accept() noexcept
 			{
 				if (ec)
 				{
-					spdlog::info("Websocket accept failed, code: {}, message: {}", ec.value(), ec.message());
+					spdlog::info("Session {} websocket accept failed, code: {}, message: {}", boost::uuids::to_string(self->get_uuid()), ec.value(), ec.message());
 					return;
 				}
+
+				spdlog::info("Session {} websocket accept successfully", boost::uuids::to_string(self->get_uuid()));
 
 				self->m_websocket_server.add_conncetion(self);
 				self->async_read();
 			}
 			catch (std::exception const& e)
 			{
-				spdlog::warn("Websocket accept failed, exception: {}", e.what());
+				spdlog::warn("Session {} websocket accept failed, exception: {}", boost::uuids::to_string(self->get_uuid()), e.what());
 			}
 		});
 }
@@ -52,22 +55,24 @@ void connection::async_read() noexcept
 			{
 				if (ec)
 				{
-					spdlog::info("Websocket receive failed, code: {}, message: {}", ec.value(), ec.message());
+					spdlog::info("Session {} receive failed, code: {}, message: {}", boost::uuids::to_string(self->get_uuid()), ec.value(), ec.message());
 					self->m_websocket_server.remove_conncetion(self->get_uuid());
 					return;
 				}
 
+				spdlog::debug("Session {} receive successfully", boost::uuids::to_string(self->get_uuid()));
+
 				// self->m_ws.text(self->m_ws.got_text());
 				std::string data = boost::beast::buffers_to_string(self->m_receive_buffer.data());
 				self->m_receive_buffer.consume(self->m_receive_buffer.size());
-				spdlog::trace("Websocket receive data is: {}", data);
+				spdlog::trace("Session {} receive data is: {}", boost::uuids::to_string(self->get_uuid()), data);
 
 				self->async_write(std::move(data));
 				self->async_read();
 			}
 			catch (std::exception const& e)
 			{
-				spdlog::warn("Websocket read failed, exception: {}", e.what());
+				spdlog::warn("Session {} read failed, exception: {}", boost::uuids::to_string(self->get_uuid()), e.what());
 				self->m_websocket_server.remove_conncetion(self->get_uuid());
 			}
 		});
@@ -102,10 +107,12 @@ void connection::async_write()
 			{
 				if (ec)
 				{
-					spdlog::info("Websocket send failed, code: {}, message: {}", ec.value(), ec.message());
+					spdlog::info("Session {} send failed, code: {}, message: {}", boost::uuids::to_string(self->get_uuid()), ec.value(), ec.message());
 					self->m_websocket_server.remove_conncetion(self->get_uuid());
 					return;
 				}
+
+				spdlog::debug("Session {} send successfully", boost::uuids::to_string(self->get_uuid()));
 
 				bool is_que_empty;
 				{
@@ -117,7 +124,7 @@ void connection::async_write()
 			}
 			catch (std::exception const& e)
 			{
-				spdlog::warn("Websocket send failed, code: {}, message: {}", ec.value(), ec.message());
+				spdlog::warn("Session {} send failed, code: {}, message: {}", boost::uuids::to_string(self->get_uuid()), ec.value(), ec.message());
 				self->m_websocket_server.remove_conncetion(self->get_uuid());
 			}
 		});
