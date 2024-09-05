@@ -17,6 +17,8 @@ struct websocket_server;
 
 struct connection : public std::enable_shared_from_this<connection>
 {
+	connection(connection&& that) = delete;
+	
 	connection(boost::asio::io_context& ctx, websocket_server& server);
 
 	boost::uuids::uuid get_uuid() noexcept;

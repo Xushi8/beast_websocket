@@ -9,7 +9,7 @@ namespace beast_websocket
 {
 struct io_context_pool
 {
-	io_context_pool(io_context_pool&&) = delete;
+	io_context_pool(io_context_pool&& that) = delete;
 
 	~io_context_pool() noexcept;
 
