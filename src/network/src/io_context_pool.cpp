@@ -1,10 +1,11 @@
 #include <beast_websocket/io_context_pool.hpp>
 #include <beast_websocket/log.hpp>
+#include <random>
 
 namespace beast_websocket
 {
 io_context_pool::io_context_pool(size_t thread_num) :
-	m_contexts(thread_num), m_next_context(0)
+	m_contexts(thread_num)
 {
 	m_works.reserve(thread_num);
 	m_threads.reserve(thread_num);
@@ -26,12 +27,9 @@ io_context_pool::~io_context_pool() noexcept
 
 boost::asio::io_context& io_context_pool::get_context()
 {
-	auto& res = m_contexts[m_next_context];
-	if (++m_next_context == m_contexts.size()) [[unlikely]]
-	{
-		m_next_context = 0;
-	}
-	return res;
+	thread_local std::mt19937 rng(std::random_device{}());
+	std::uniform_int_distribution<size_t> uni(0, m_contexts.size() - 1);
+	return m_contexts[uni(rng)];
 }
 
 io_context_pool& io_context_pool::instance()

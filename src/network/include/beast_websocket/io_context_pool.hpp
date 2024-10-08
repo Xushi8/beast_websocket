@@ -25,6 +25,5 @@ private:
 	std::vector<boost::asio::io_context> m_contexts;
 	std::vector<boost::asio::io_context::work> m_works;
 	std::vector<std::jthread> m_threads;
-	size_t m_next_context;
 };
 } // namespace beast_websocket
