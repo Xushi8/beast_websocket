@@ -6,6 +6,7 @@
 #include <boost/unordered/unordered_flat_map.hpp>
 #include <boost/uuid/uuid_hash.hpp>
 #include <boost/uuid/uuid.hpp>
+#include <beast_websocket/io_context_pool.hpp>
 
 namespace beast_websocket
 {
@@ -27,5 +28,6 @@ struct websocket_server
 private:
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	boost::unordered_flat_map<boost::uuids::uuid, std::shared_ptr<connection>> m_conncetions;
+    inline static io_context_pool m_context_pool;
 };
 } // namespace beast_websocket

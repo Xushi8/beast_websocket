@@ -32,12 +32,6 @@ boost::asio::io_context& io_context_pool::get_context()
 	return m_contexts[uni(rng)];
 }
 
-io_context_pool& io_context_pool::instance()
-{
-	static io_context_pool singleton;
-	return singleton;
-}
-
 void io_context_pool::stop()
 {
 	for (auto& ctx : m_contexts)
