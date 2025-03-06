@@ -1,8 +1,0 @@
-namespace MyGame.Example;
-
-table Message {
-  id:int;
-  text:string;
-}
-
-root_type Message;

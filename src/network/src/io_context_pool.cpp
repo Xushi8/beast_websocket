@@ -1,5 +1,4 @@
 #include <beast_websocket/io_context_pool.hpp>
-#include <beast_websocket/log.hpp>
 #include <random>
 
 namespace beast_websocket
@@ -22,7 +21,6 @@ io_context_pool::io_context_pool(size_t thread_num) :
 io_context_pool::~io_context_pool() noexcept
 {
 	stop();
-	spdlog::info("io_context_pool destroyed");
 }
 
 boost::asio::io_context& io_context_pool::get_context()
