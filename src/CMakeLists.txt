@@ -18,19 +18,6 @@ foreach(name ${TARGETS})
         # package
         Threads::Threads
         OpenMP::OpenMP_CXX
-        TBB::tbb
-        mimalloc
-
-
-        # Boost::filesystem
-
-        ${RE2_LIB}
-
-        ${GMP_LIB}
-        ${MPFR_LIB}
-
-        ${PQ_LIB}
-        ${PQXX_LIB}
 
         # external
     )
